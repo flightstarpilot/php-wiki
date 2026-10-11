@@ -1,13 +1,13 @@
 {
-    "name": "your-name/wiki",
+    "name": "flightstarpilot/php-wiki",
     "description": "Lightweight self-hosted wiki in plain PHP with pluggable storage drivers",
     "type": "project",
     "license": "MIT",
     "keywords": ["wiki", "markdown", "php", "self-hosted", "sqlite", "mysql"],
-    "homepage": "https://github.com/YOUR-USERNAME/YOUR-REPO",
+    "homepage": "https://github.com/flightstarpilot/php-wiki",
     "support": {
-        "issues": "https://github.com/YOUR-USERNAME/YOUR-REPO/issues",
-        "docs": "https://github.com/YOUR-USERNAME/YOUR-REPO/tree/main/docs"
+        "issues": "https://github.com/flightstarpilot/php-wiki/issues",
+        "docs": "https://github.com/flightstarpilot/php-wiki/tree/main/docs"
     },
     "require": {
         "php": ">=8.0",
