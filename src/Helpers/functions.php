@@ -58,7 +58,18 @@ function adminUrl(string $section = '', string $action = '', $id = '', array $qu
 
 function redirect(string $path): void
 {
-    header('Location: ' . (preg_match('#^https?://#', $path) ? $path : url($path)));
+    if (!preg_match('#^https?://#', $path)) {
+        $path = url($path);
+    }
+
+    // RFC 7231 requires the Location header to be ASCII-only. Percent-encode
+    // any non-ASCII bytes (for example UTF-8 slugs) so browsers decode them
+    // correctly instead of receiving raw high bytes.
+    $path = preg_replace_callback('/[^\x21-\x7E]/', function ($m) {
+        return rawurlencode($m[0]);
+    }, $path);
+
+    header('Location: ' . $path);
     exit;
 }
 
