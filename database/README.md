@@ -1,6 +1,6 @@
 # Database
 
-This directory contains the reference SQL schema for the Wiki project.
+This directory contains the reference SQL schema for the PHP Wiki project.
 
 - `mysql.sql`  - MySQL / MariaDB schema
 - `sqlite.sql` - SQLite schema

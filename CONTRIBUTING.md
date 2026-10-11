@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving Wiki. This document describes how to
+Thanks for your interest in improving PHP Wiki. This document describes how to
 report bugs, propose features, and submit pull requests.
 
 ## Reporting bugs

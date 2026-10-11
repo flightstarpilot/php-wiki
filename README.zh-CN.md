@@ -1,4 +1,4 @@
-# Wiki
+# PHP Wiki
 
 一个用纯 PHP 编写的轻量自托管 Wiki 引擎。公开可读，登录后可协作，支持
 多语言内容、树形目录、标签、双向链接、全文搜索、附件，以及可插拔的存储
@@ -120,7 +120,7 @@ Redis 作为可选缓存后端。
 
 属主比权限数字重要。属主为 root、权限为 755 的目录，对 Web 服务器仍不可写。
 
-不要把 Wiki 放在 `/root` 目录下。`/root` 本身是 700 权限，Web 服务器无法
+不要把 PHP Wiki 放在 `/root` 目录下。`/root` 本身是 700 权限，Web 服务器无法
 进入。请放到正常 Web 根目录，例如 `/var/www/wiki` 或 `/www/wwwroot/wiki`。
 
 如果系统开启了 SELinux（RHEL、CentOS、Rocky、AlmaLinux）：
