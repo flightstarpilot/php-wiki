@@ -1,4 +1,4 @@
-# Wiki
+# PHP Wiki
 
 A lightweight, self-hosted wiki engine in plain PHP. Public read, authenticated
 collaboration through issues and proposals, multi-language content, tree
