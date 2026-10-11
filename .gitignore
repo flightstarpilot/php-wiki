@@ -1,0 +1,31 @@
+# Local configuration (contains database credentials and app key)
+/config/config.php
+
+# Runtime data
+/data/
+/uploads/*
+!/uploads/.gitignore
+!/uploads/.htaccess
+
+# Vendored PHPMailer (optional dependency, installed by the administrator)
+/vendor/PHPMailer/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# PHP
+*.log
+.php-cs-fixer.cache
+.phpunit.result.cache
+
+# Keep the sample directory markers
+!.gitkeep
+
+# BaoTa panel configuration
+.user.ini
