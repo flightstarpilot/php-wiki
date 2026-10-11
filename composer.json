@@ -1,0 +1,31 @@
+{
+    "name": "your-name/wiki",
+    "description": "Lightweight self-hosted wiki in plain PHP with pluggable storage drivers",
+    "type": "project",
+    "license": "MIT",
+    "keywords": ["wiki", "markdown", "php", "self-hosted", "sqlite", "mysql"],
+    "homepage": "https://github.com/YOUR-USERNAME/YOUR-REPO",
+    "support": {
+        "issues": "https://github.com/YOUR-USERNAME/YOUR-REPO/issues",
+        "docs": "https://github.com/YOUR-USERNAME/YOUR-REPO/tree/main/docs"
+    },
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*",
+        "ext-json": "*"
+    },
+    "suggest": {
+        "ext-pdo_sqlite": "SQLite storage driver",
+        "ext-pdo_mysql": "MySQL storage driver",
+        "ext-curl": "HTTP storage driver and GitHub OAuth",
+        "ext-openssl": "Encrypting SMTP credentials at rest",
+        "ext-mbstring": "Unicode-aware slug generation"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "scripts": {
+        "lint": "find src templates lang -name '*.php' -exec php -l {} \\;"
+    }
+}
