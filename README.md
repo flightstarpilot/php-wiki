@@ -1,5 +1,10 @@
 # PHP Wiki
 
+[![Release](https://img.shields.io/github/v/release/flightstarpilot/php-wiki)](https://github.com/flightstarpilot/php-wiki/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-777bb4.svg)](https://www.php.net/)
+[![PHP lint](https://github.com/flightstarpilot/php-wiki/actions/workflows/php-lint.yml/badge.svg)](https://github.com/flightstarpilot/php-wiki/actions/workflows/php-lint.yml)
+
 A lightweight, self-hosted wiki engine in plain PHP. Public read, authenticated
 collaboration through issues and proposals, multi-language content, tree
 structure, tags, backlinks, full-text search, attachments, and pluggable
