@@ -294,4 +294,7 @@ return [
 
     'settings.label.site.force_https' => 'Force HTTPS',
     'settings.hint.site.force_https'  => 'Redirect every request to https://. Enable only when the site has a valid TLS certificate.',
+
+    'page.slug_placeholder' => 'leave empty to generate from the title',
+    'page.slug_hint_new'    => 'Used in the URL. Non-ASCII characters (including Chinese) are preserved. Leave empty to generate from the title.',
 ];

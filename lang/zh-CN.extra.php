@@ -294,4 +294,7 @@ return [
 
     'settings.label.site.force_https' => '强制 HTTPS',
     'settings.hint.site.force_https'  => '将所有请求重定向到 https://。仅在站点已配置有效 TLS 证书时开启。',
+
+    'page.slug_placeholder' => '留空则根据标题自动生成',
+    'page.slug_hint_new'    => '用于 URL。非 ASCII 字符（包括中文）会被保留。留空则根据标题自动生成。',
 ];
