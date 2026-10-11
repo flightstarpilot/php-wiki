@@ -3,7 +3,6 @@
 [![Release](https://img.shields.io/github/v/release/flightstarpilot/php-wiki)](https://github.com/flightstarpilot/php-wiki/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-777bb4.svg)](https://www.php.net/)
-[![Lint](https://img.shields.io/github/actions/workflow/status/flightstarpilot/php-wiki/php-lint.yml?style=flat-square&label=lint)](https://github.com/flightstarpilot/php-wiki/actions/workflows/php-lint.yml)
 
 一个用纯 PHP 编写的轻量自托管 Wiki 引擎。公开可读，登录后可协作，支持
 多语言内容、树形目录、标签、双向链接、全文搜索、附件，以及可插拔的存储
