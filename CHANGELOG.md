@@ -110,4 +110,5 @@ published version to compare against.
 - Every PHP file except the three entry points is denied.
 - Automatic HTTPS redirect available as an opt-in setting.
 - 
-[Unreleased]: https://github.com/flightstarpilot/php-wiki/commits/main
+[Unreleased]: https://github.com/flightstarpilot/php-wiki/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/flightstarpilot/php-wiki/compare/v0.1.0...v0.2.0
