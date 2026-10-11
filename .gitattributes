@@ -1,0 +1,25 @@
+* text=auto eol=lf
+
+*.php    text
+*.md     text
+*.sql    text
+*.json   text
+*.yml    text
+*.yaml   text
+*.js     text
+*.css    text
+
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary
+
+# Exclude development files from release archives
+/.github     export-ignore
+/.gitignore  export-ignore
+/.editorconfig export-ignore
+/.gitattributes export-ignore
