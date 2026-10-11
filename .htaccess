@@ -1,0 +1,54 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ------------------------------------------------------------------
+    # Canonical redirects
+    # ------------------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+    RewriteRule ^index\.php$ / [R=301,L]
+
+    RewriteCond %{THE_REQUEST} \s/+admin\.php\?p=([a-z_]+)&?(.*?)\s [NC]
+    RewriteRule ^admin\.php$ /admin/%1?%2 [R=301,L]
+
+    RewriteCond %{THE_REQUEST} \s/+admin\.php[\s?] [NC]
+    RewriteRule ^admin\.php$ /admin [R=301,L]
+
+    # ------------------------------------------------------------------
+    # Deny protected paths
+    # ------------------------------------------------------------------
+    RewriteRule ^(config|src|data|lang|templates|vendor/PHPMailer)(/|$) - [R=404,L,NC]
+
+    # Deny PHP files other than the three entry points
+    RewriteCond %{REQUEST_URI} \.php$ [NC]
+    RewriteCond %{REQUEST_URI} !^/(index|admin|install)\.php$ [NC]
+    RewriteRule ^ - [F,L]
+
+    # ------------------------------------------------------------------
+    # Route requests
+    # ------------------------------------------------------------------
+    # /admin/* is served by admin.php
+    RewriteRule ^admin(/.*)?$ admin.php [L,QSA]
+
+    # Root path — must come BEFORE the !-f/!-d guard,
+    # because / is a directory and would fail !-d
+    RewriteRule ^$ index.php [L]
+
+    # Everything else that is not an existing file goes to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+<FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm)$">
+    Require all denied
+</FilesMatch>
+
+<Files ".htaccess">
+    Require all denied
+</Files>
+
+<Files ".env">
+    Require all denied
+</Files>
