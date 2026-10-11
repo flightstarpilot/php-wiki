@@ -107,5 +107,5 @@ published version to compare against.
   `vendor/PHPMailer/` blocked at the web server level.
 - Every PHP file except the three entry points is denied.
 - Automatic HTTPS redirect available as an opt-in setting.
-
+- 
 [Unreleased]: https://github.com/flightstarpilot/php-wiki/commits/main
