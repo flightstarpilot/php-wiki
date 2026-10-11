@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-11
+
 Everything below ships in the first public release. It is listed as a single
 block rather than as incremental history because there is no earlier
 published version to compare against.
