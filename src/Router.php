@@ -20,6 +20,11 @@ class Router
 
         $path = parse_url($uri, PHP_URL_PATH) ?? '/';
 
+        // URLs arrive percent-encoded. Decode the path before matching so
+        // that slugs containing non-ASCII characters (for example Chinese)
+        // match the value stored in the database.
+        $path = rawurldecode($path);
+
         // 去掉子目录前缀
         $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
         if ($base && $base !== '/' && str_starts_with($path, $base)) {
