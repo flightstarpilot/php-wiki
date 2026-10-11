@@ -108,4 +108,4 @@ published version to compare against.
 - Every PHP file except the three entry points is denied.
 - Automatic HTTPS redirect available as an opt-in setting.
 
-[Unreleased]: https://github.com/YOUR-USERNAME/YOUR-REPO/commits/main
+[Unreleased]: https://github.com/flightstarpilot/php-wiki/commits/main
