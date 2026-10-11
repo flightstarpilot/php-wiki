@@ -39,14 +39,15 @@ ob_start();
       <span class="text-sm text-slate-500 border rounded px-3 py-2 bg-slate-50"><?= e($lang) ?></span>
     </div>
 
-    <?php if (!$isNew): ?>
-      <label class="block">
-        <span class="text-xs text-slate-500"><?= e($t('page.slug')) ?></span>
-        <input name="slug" value="<?= e($groupSlug) ?>"
-               class="mt-1 w-full border rounded px-3 py-2 text-sm font-mono">
-        <span class="text-xs text-slate-400"><?= e($t('page.slug_hint')) ?></span>
-      </label>
-    <?php endif; ?>
+    <label class="block">
+      <span class="text-xs text-slate-500"><?= e($t('page.slug')) ?></span>
+      <input name="slug" value="<?= e($groupSlug) ?>"
+             placeholder="<?= e($t('page.slug_placeholder')) ?>"
+             class="mt-1 w-full border rounded px-3 py-2 text-sm font-mono">
+      <span class="text-xs text-slate-400">
+        <?= e($isNew ? $t('page.slug_hint_new') : $t('page.slug_hint')) ?>
+      </span>
+    </label>
 
     <?php if (\Wiki\Models\Settings::getBool('feature.tags')): ?>
       <input name="tags" value="<?= e($tagString) ?>" placeholder="<?= e($t('page.tags_placeholder')) ?>"
