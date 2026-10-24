@@ -117,7 +117,7 @@ $footerHtml = (string)\Wiki\Models\Settings::get('site.footer', '');
         <div class="hidden group-hover:block absolute right-0 top-full pt-1 min-w-[140px] z-30">
           <div class="bg-white border rounded shadow-lg py-1">
             <?php foreach ($uiLangs as $lc): ?>
-              <a href="<?= e(url('lang/' . $lc)) ?>"
+              <a href="<?= e(url('ui/' . $lc)) ?>"
                  class="block px-3 py-1 text-sm hover:bg-slate-100 <?= $lc === $curLang ? 'text-blue-600 font-medium' : 'text-slate-700' ?>">
                 <?= e($lc) ?>
               </a>

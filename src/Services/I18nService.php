@@ -26,6 +26,41 @@ class I18nService
         return ['en-US', 'zh-CN', 'ja-JP', 'ko-KR', 'fr-FR', 'de-DE', 'es-ES', 'ru-RU'];
     }
 
+    /**
+     * Content languages available for translation groups.
+     * Wider than supported(): UI strings ship for a handful of languages,
+     * but wiki content may be written in any language.
+     */
+    public static function contentLangs(): array
+    {
+        return [
+            'en-US' => 'English (US)',
+            'zh-CN' => 'Chinese (Simplified)',
+            'zh-TW' => 'Chinese (Traditional)',
+            'ja-JP' => 'Japanese',
+            'ko-KR' => 'Korean',
+            'fr-FR' => 'French',
+            'de-DE' => 'German',
+            'es-ES' => 'Spanish',
+            'ru-RU' => 'Russian',
+            'pt-BR' => 'Portuguese (Brazil)',
+            'it-IT' => 'Italian',
+            'ar-SA' => 'Arabic',
+            'hi-IN' => 'Hindi',
+            'nl-NL' => 'Dutch',
+            'pl-PL' => 'Polish',
+            'tr-TR' => 'Turkish',
+            'vi-VN' => 'Vietnamese',
+            'th-TH' => 'Thai',
+            'id-ID' => 'Indonesian',
+            'sv-SE' => 'Swedish',
+            'cs-CZ' => 'Czech',
+            'el-GR' => 'Greek',
+            'he-IL' => 'Hebrew',
+            'uk-UA' => 'Ukrainian',
+        ];
+    }
+
     public static function detect(): void
     {
         $supported = self::supported();

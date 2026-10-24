@@ -20,23 +20,32 @@ ob_start();
   </header>
 
   <?php if ($versions): ?>
-    <form method="get" action="<?= e($diffBase) ?>" class="px-6 py-3 border-b bg-slate-50 flex items-center gap-2 text-sm flex-wrap">
+    <form id="diff-compare-form" class="px-6 py-3 border-b bg-slate-50 flex items-center gap-2 text-sm flex-wrap"
+          onsubmit="return submitDiffCompare();">
       <span class="text-slate-500"><?= e($t('page.compare')) ?></span>
-      <select name="v1" class="border rounded px-2 py-1 bg-white">
+      <select id="diff-v1" class="border rounded px-2 py-1 bg-white">
         <?php foreach ($versions as $v): ?>
           <option value="<?= (int)$v['version'] ?>">v<?= (int)$v['version'] ?></option>
         <?php endforeach; ?>
       </select>
       <span class="text-slate-400">&rarr;</span>
-      <select name="v2" class="border rounded px-2 py-1 bg-white">
+      <select id="diff-v2" class="border rounded px-2 py-1 bg-white">
         <?php foreach ($versions as $v): ?>
           <option value="<?= (int)$v['version'] ?>" <?= $v === $versions[0] ? 'selected' : '' ?>>v<?= (int)$v['version'] ?></option>
         <?php endforeach; ?>
       </select>
-      <button class="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+      <button type="submit" class="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
         <?= icon('compare', 'w-4 h-4') ?><span><?= e($t('page.view_diff')) ?></span>
       </button>
     </form>
+    <script>
+    function submitDiffCompare() {
+      var v1 = document.getElementById('diff-v1').value;
+      var v2 = document.getElementById('diff-v2').value;
+      window.location = <?= json_encode($diffBase) ?> + '/' + v1 + '..' + v2 + '/side';
+      return false;
+    }
+    </script>
   <?php endif; ?>
 
   <?php if (!$versions): ?>
@@ -69,7 +78,7 @@ ob_start();
 
           <div class="flex items-center gap-1">
             <?php if ($i > 0): ?>
-              <a href="<?= e($diffBase . '?v1=' . (int)$v['version'] . '&v2=' . (int)$versions[0]['version']) ?>"
+              <a href="<?= e($diffBase . '/' . (int)$v['version'] . '..' . (int)$versions[0]['version'] . '/side') ?>"
                  class="text-xs px-2 py-1 rounded text-slate-500 hover:bg-slate-100 flex items-center gap-1">
                 <?= icon('compare', 'w-3 h-3') ?><span><?= e($t('page.diff_with_current')) ?></span>
               </a>

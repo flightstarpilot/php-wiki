@@ -297,4 +297,11 @@ return [
 
     'page.slug_placeholder' => 'leave empty to generate from the title',
     'page.slug_hint_new'    => 'Used in the URL. Non-ASCII characters (including Chinese) are preserved. Leave empty to generate from the title.',
+
+    // Translation group language management
+    'page.lang_select'      => 'Language version',
+    'page.lang_new_hint'    => 'The default language of this new translation group.',
+    'page.lang_create_hint' => 'Creating the {lang} version of this page.',
+    'page.lang_add'         => 'Add language version',
+    'page.new_lang_title'   => 'New {lang} version',
 ];

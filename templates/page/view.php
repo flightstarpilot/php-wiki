@@ -4,8 +4,9 @@ $currentSlug = $group['slug'];
 $defaultLang = (string)\Wiki\Models\Settings::get('site.default_lang');
 $t           = fn(string $k, array $p = []) => \Wiki\Services\I18nService::t($k, $p);
 
-$viewLang = $page['lang'] ?? $lang;
-$viewUrl  = url('page/' . $group['slug'] . ($viewLang === $defaultLang ? '' : '/' . $viewLang));
+$viewLang     = $page['lang'] ?? $lang ?? \Wiki\Services\I18nService::current();
+$expectedLang = $lang ?? \Wiki\Services\I18nService::current();
+$viewUrl      = url('page/' . $group['slug'] . ($viewLang === $defaultLang ? '' : '/' . $viewLang));
 
 $featureIssues    = \Wiki\Models\Settings::getBool('feature.issues');
 $featureProposals = \Wiki\Models\Settings::getBool('feature.proposals');
@@ -41,6 +42,30 @@ ob_start();
         </a>
       <?php endforeach; ?>
 
+      <?php
+      $existingLangCodes = array_column($allLangs, 'lang');
+      $allContentLangs   = \Wiki\Services\I18nService::contentLangs();
+      $missingLangCodes  = array_values(array_diff(array_keys($allContentLangs), $existingLangCodes));
+      ?>
+      <?php if ($missingLangCodes && \Wiki\Auth\Auth::isEditor()): ?>
+        <div class="relative group ml-1">
+          <button type="button" class="px-2 py-1 rounded text-slate-400 hover:bg-slate-100 flex items-center gap-1"
+                  title="<?= e($t('page.lang_add')) ?>">
+            <?= icon('plus', 'w-3 h-3') ?>
+          </button>
+          <div class="hidden group-hover:block absolute right-0 top-full pt-1 min-w-[200px] max-h-64 overflow-auto z-30">
+            <div class="bg-white border rounded shadow-lg py-1">
+              <?php foreach ($missingLangCodes as $mc): ?>
+                <a href="<?= e(url('page/' . $group['slug'] . '/' . $mc . '/edit')) ?>"
+                   class="block px-3 py-1 text-sm hover:bg-slate-100 text-slate-700">
+                  <?= e($allContentLangs[$mc]) ?> (<?= e($mc) ?>)
+                </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
       <?php if ($page && \Wiki\Models\Settings::getBool('feature.history')): ?>
         <a href="<?= e(url('page/' . $group['slug'] . '/' . $viewLang . '/history')) ?>"
            class="flex items-center gap-1 px-2 py-1 rounded text-slate-500 hover:bg-slate-100">
@@ -60,7 +85,7 @@ ob_start();
   <?php if ($fallback && $page): ?>
     <div class="bg-amber-50 text-amber-700 text-sm px-6 py-2 border-b flex items-center gap-2">
       <?= icon('alert', 'w-4 h-4') ?>
-      <span><?= e($t('page.fallback_notice', ['lang' => $lang, 'fallback' => $page['lang']])) ?></span>
+      <span><?= e($t('page.fallback_notice', ['lang' => $expectedLang, 'fallback' => $page['lang']])) ?></span>
       <?php if (\Wiki\Auth\Auth::isEditor()): ?>
         <a class="underline ml-2" href="<?= e(url('page/' . $group['slug'] . '/' . $lang . '/edit')) ?>"><?= e($t('page.translate')) ?></a>
       <?php endif; ?>

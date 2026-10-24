@@ -1,18 +1,28 @@
 <?php
-$isNew       = !$page;
+$groupExists = (bool)$group;
+$isNewPage   = !$page;          // this language version has no content yet
+$isNewGroup  = !$groupExists;   // the translation group itself is new
+
 $defaultLang = (string)\Wiki\Models\Settings::get('site.default_lang');
 $prefillSlug = $prefillSlug ?? '';
-$groupSlug   = $group['slug'] ?? ($isNew ? $prefillSlug : '');
+$groupSlug   = $group['slug'] ?? $prefillSlug;
 $lang        = $lang ?? $defaultLang;
 $titleVal    = $page['title']   ?? '';
 $contentVal  = $page['content'] ?? '';
 $tagString   = $tagString ?? '';
 $t           = fn(string $k, array $p = []) => \Wiki\Services\I18nService::t($k, $p);
 
-$pageTitle   = $isNew
+$pageTitle = $isNewGroup
     ? $t('page.new_title')
-    : $t('page.edit_title', ['title' => $page['title'] ?? '']);
+    : ($isNewPage
+        ? $t('page.new_lang_title', ['lang' => $lang, 'slug' => $groupSlug])
+        : $t('page.edit_title', ['title' => $page['title'] ?? '']));
 $currentSlug = $groupSlug;
+
+$contentLangs = \Wiki\Services\I18nService::contentLangs();
+if (!isset($contentLangs[$lang])) {
+    $contentLangs[$lang] = $lang;
+}
 
 $attachmentsEnabled = \Wiki\Models\Settings::getBool('feature.attachments');
 $maxSize = \Wiki\Services\AttachmentService::maxSize();
@@ -23,21 +33,40 @@ ob_start();
 ?>
 <form id="page-edit-form" method="post" action="<?= e(url('page/save')) ?>" class="bg-white rounded shadow">
   <input type="hidden" name="csrf" value="<?= e($csrfToken) ?>">
-  <input type="hidden" name="original_slug" value="<?= e($groupSlug) ?>">
-  <input type="hidden" name="lang" value="<?= e($lang) ?>">
-  <?php if ($isNew): ?>
-    <input type="hidden" name="new_group" value="1">
-  <?php endif; ?>
-  <?php if ($isNew && $prefillSlug !== ''): ?>
-    <input type="hidden" name="slug" value="<?= e($prefillSlug) ?>">
+  <input type="hidden" name="original_slug" value="<?= e($groupExists ? $groupSlug : '') ?>">
+
+  <?php if ($groupExists && $isNewPage): ?>
+    <div class="bg-amber-50 text-amber-800 text-sm px-6 py-2 border-b flex items-center gap-2">
+      <?= icon('plus', 'w-4 h-4') ?>
+      <span><?= e($t('page.lang_create_hint', ['lang' => $lang])) ?></span>
+    </div>
   <?php endif; ?>
 
   <div class="px-6 py-4 border-b space-y-3">
     <div class="flex items-center gap-3 flex-wrap">
       <input name="title" value="<?= e($titleVal) ?>" placeholder="<?= e($t('page.title_placeholder')) ?>"
              class="flex-1 min-w-[200px] text-xl font-bold border rounded px-3 py-2" required autofocus>
-      <span class="text-sm text-slate-500 border rounded px-3 py-2 bg-slate-50"><?= e($lang) ?></span>
+      <span class="text-sm text-slate-500 border rounded px-3 py-2 bg-slate-50 font-mono"><?= e($lang) ?></span>
     </div>
+
+    <label class="block">
+      <span class="text-xs text-slate-500"><?= e($t('page.lang_select')) ?></span>
+      <?php if ($groupExists): ?>
+        <input type="hidden" name="lang" value="<?= e($lang) ?>">
+        <span class="mt-1 block text-sm border rounded px-3 py-2 bg-slate-50 text-slate-600 font-mono">
+          <?= e($lang) ?>
+        </span>
+      <?php else: ?>
+        <select name="lang" class="mt-1 w-full border rounded px-3 py-2">
+          <?php foreach ($contentLangs as $code => $label): ?>
+            <option value="<?= e($code) ?>" <?= $code === $lang ? 'selected' : '' ?>>
+              <?= e($label) ?> (<?= e($code) ?>)
+            </option>
+          <?php endforeach; ?>
+        </select>
+        <span class="text-xs text-slate-400"><?= e($t('page.lang_new_hint')) ?></span>
+      <?php endif; ?>
+    </label>
 
     <label class="block">
       <span class="text-xs text-slate-500"><?= e($t('page.slug')) ?></span>
@@ -45,7 +74,7 @@ ob_start();
              placeholder="<?= e($t('page.slug_placeholder')) ?>"
              class="mt-1 w-full border rounded px-3 py-2 text-sm font-mono">
       <span class="text-xs text-slate-400">
-        <?= e($isNew ? $t('page.slug_hint_new') : $t('page.slug_hint')) ?>
+        <?= e($isNewGroup ? $t('page.slug_hint_new') : $t('page.slug_hint')) ?>
       </span>
     </label>
 
@@ -68,7 +97,7 @@ ob_start();
 
   <div class="px-6 py-4 flex gap-3">
     <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><?= e($t('page.save')) ?></button>
-    <a href="<?= e($groupSlug ? url('page/' . $groupSlug) : url('')) ?>"
+    <a href="<?= e($groupSlug ? url('page/' . $groupSlug . ($lang !== $defaultLang ? '/' . $lang : '')) : url('')) ?>"
        class="text-slate-500 px-4 py-2 rounded hover:bg-slate-100"><?= e($t('page.cancel')) ?></a>
   </div>
 </form>
@@ -138,8 +167,7 @@ ob_start();
         const md = file.type.startsWith('image/')
           ? '![' + r.filename + '](' + r.url + ')'
           : '[' + r.filename + '](' + r.url + ')';
-        const current = editor.getMarkdown();
-        editor.setMarkdown(current + '\n' + md + '\n');
+        editor.setMarkdown(editor.getMarkdown() + '\n' + md + '\n');
       }
     });
 
@@ -154,8 +182,7 @@ ob_start();
           const md = file.type.startsWith('image/')
             ? '![' + r.filename + '](' + r.url + ')'
             : '[' + r.filename + '](' + r.url + ')';
-          const current = editor.getMarkdown();
-          editor.setMarkdown(current + '\n' + md + '\n');
+          editor.setMarkdown(editor.getMarkdown() + '\n' + md + '\n');
         }
       };
       input.click();

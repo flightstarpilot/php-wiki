@@ -72,29 +72,57 @@ class PageController
 
     public function view(array $params): void
     {
-        $slug = $params['slug'];
-        $lang = $params['lang'] ?? null;
+        $slug    = $params['slug'];
+        $urlLang = $params['lang'] ?? null;
 
         $group = TranslationGroup::findBySlug($slug);
         if (!$group) { $this->notFound('/page/' . $slug); return; }
 
-        $defaultLang = (string)Settings::get('site.default_lang', $group['default_lang']);
-        $requestedLang = $lang ?? $defaultLang;
-
-        $page = Page::findByGroupLang((int)$group['id'], $requestedLang);
-
-        $fallback = false;
-        if (!$page) {
-            $page = Page::findByGroupLang((int)$group['id'], $group['default_lang']);
-            $fallback = $page !== null;
+        // Build the lookup chain:
+        //   1. explicit language in URL (highest priority)
+        //   2. current UI language
+        //   3. site default language
+        //   4. translation group default language
+        //   5. any version that exists in the group
+        $candidates = [];
+        if ($urlLang !== null && $urlLang !== '') {
+            $candidates[] = $urlLang;
         }
+        $candidates[] = I18nService::current();
+        $candidates[] = (string)Settings::get('site.default_lang', '');
+        $candidates[] = (string)$group['default_lang'];
+
+        $page = null;
+        $matchedLang = null;
+        foreach (array_unique(array_filter($candidates)) as $lc) {
+            $p = Page::findByGroupLang((int)$group['id'], $lc);
+            if ($p) { $page = $p; $matchedLang = $lc; break; }
+        }
+
+        if (!$page) {
+            $list = Page::listByGroup((int)$group['id']);
+            if ($list) {
+                $page = Page::find((int)$list[0]['id']);
+                $matchedLang = $page['lang'] ?? null;
+            }
+        }
+
+        // Fallback notice is shown when the displayed version differs from
+        // the language the visitor would naturally expect: the language
+        // pinned in the URL, or the UI language when the URL did not pin one.
+        $expectedLang = ($urlLang !== null && $urlLang !== '')
+            ? $urlLang
+            : I18nService::current();
+        $fallback = $page !== null
+            && $matchedLang !== null
+            && $matchedLang !== $expectedLang;
 
         $html      = $page ? MarkdownService::render((string)($page['content'] ?? '')) : '';
         $allLangs  = Page::listByGroup((int)$group['id']);
         $backlinks = $page ? Page::backlinks((int)$page['id']) : [];
         $pageTags  = $page ? Tag::listForPage((int)$page['id']) : [];
 
-        $viewLang = $page['lang'] ?? $requestedLang;
+        $viewLang = $page['lang'] ?? $urlLang ?? I18nService::current();
 
         require WIKI_ROOT . '/templates/page/view.php';
     }
@@ -126,7 +154,10 @@ class PageController
         if (!Auth::isEditor()) { $this->forbidden(); return; }
         $group = null;
         $page  = null;
-        $lang  = (string)Settings::get('site.default_lang');
+        $lang  = trim((string)($_GET['lang'] ?? ''));
+        if ($lang === '') {
+            $lang = (string)Settings::get('site.default_lang');
+        }
         $tagString = '';
 
         // Pre-fill slug when creating the home page on first run
@@ -152,20 +183,27 @@ class PageController
         $content = (string)($_POST['content'] ?? '');
         $comment = trim($_POST['comment'] ?? '');
         $tags    = trim((string)($_POST['tags'] ?? ''));
-        $isNew   = !empty($_POST['new_group']);
 
         if ($title === '') { http_response_code(400); exit('Title is required'); }
 
         $uid = (int)Auth::user()['id'];
 
-        if ($isNew || $originalSlug === '') {
-            $baseSlug = $newSlug !== '' ? $newSlug : $title;
-            $slug = TranslationGroup::uniqueSlug(TranslationGroup::makeSlug($baseSlug));
-            $groupId = TranslationGroup::create($slug, $lang);
-            AuditLog::log('page.create_group', 'translation_group', $groupId, ['slug' => $slug]);
-        } else {
+        // original_slug is the authoritative signal that we are writing into
+        // an existing translation group. The legacy "new_group" hidden field
+        // was unreliable: it was set to true whenever the requested language
+        // version did not exist yet, which caused a duplicate group to be
+        // created instead of a new language version.
+        if ($originalSlug !== '') {
             $g = TranslationGroup::findBySlug($originalSlug);
-            if (!$g) { $this->notFound('/page/' . $originalSlug); return; }
+            if (!$g) {
+                // The slug no longer exists (deleted or renamed between form
+                // load and submit). Fall back to creating a new group so the
+                // user does not lose their content to a 404.
+                $baseSlug = $newSlug !== '' ? $newSlug : $originalSlug;
+                $slug = TranslationGroup::uniqueSlug(TranslationGroup::makeSlug($baseSlug));
+                $groupId = TranslationGroup::create($slug, $lang);
+                AuditLog::log('page.create_group', 'translation_group', $groupId, ['slug' => $slug]);
+            } else {
             $groupId = (int)$g['id'];
             $slug = $originalSlug;
 
@@ -182,6 +220,12 @@ class PageController
                     $slug = $clean;
                 }
             }
+            }
+        } else {
+            $baseSlug = $newSlug !== '' ? $newSlug : $title;
+            $slug = TranslationGroup::uniqueSlug(TranslationGroup::makeSlug($baseSlug));
+            $groupId = TranslationGroup::create($slug, $lang);
+            AuditLog::log('page.create_group', 'translation_group', $groupId, ['slug' => $slug]);
         }
 
         $page = Page::findByGroupLang($groupId, $lang);
@@ -251,9 +295,19 @@ class PageController
              ?: Page::findByGroupLang((int)$group['id'], $group['default_lang']);
         if (!$page) { $this->notFound('/page/' . $slug . '/diff'); return; }
 
-        $v1 = (int)($_GET['v1'] ?? 0);
-        $v2 = (int)($_GET['v2'] ?? 0);
-        $mode = ($_GET['mode'] ?? 'side') === 'unified' ? 'unified' : 'side';
+        // Version range and mode are now encoded in the path:
+        //   /page/{slug}/{lang}/diff/{v1}..{v2}/{mode}
+        //   /page/{slug}/{lang}/diff/{v1}/{mode}
+        //   /page/{slug}/{lang}/diff
+        $range = (string)($params['range'] ?? '');
+        $mode  = (($params['mode'] ?? 'side') === 'unified') ? 'unified' : 'side';
+
+        $v1 = 0;
+        $v2 = 0;
+        if ($range !== '' && preg_match('/^(\d+)(?:\.\.(\d+))?$/', $range, $m)) {
+            $v1 = (int)$m[1];
+            $v2 = isset($m[2]) && $m[2] !== '' ? (int)$m[2] : 0;
+        }
 
         $versions = Page::versions((int)$page['id']);
         if (!$versions) { $this->notFound('/page/' . $slug . '/diff'); return; }

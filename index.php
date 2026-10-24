@@ -41,7 +41,7 @@ $ac = new AttachmentController();
 $uc = new UserController();
 $api = new ApiController();
 
-$router->get('/lang/{code}', fn($p) => $pc->switchLang($p));
+$router->get('/ui/{code}', fn($p) => $pc->switchLang($p));
 
 // Authentication
 $router->get('/login',                fn($p) => $uc->loginForm());
@@ -106,8 +106,12 @@ $router->get('/new', fn($p) => $pc->newForm($p));
 $router->get('/page/{slug}/{lang}/history', fn($p) => $pc->history($p));
 $router->get('/page/{slug}/history',        fn($p) => $pc->history($p));
 
-$router->get('/page/{slug}/{lang}/diff', fn($p) => $pc->diff($p));
-$router->get('/page/{slug}/diff',        fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/{lang}/diff/{range}/{mode}', fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/diff/{range}/{mode}',        fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/{lang}/diff/{range}',        fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/diff/{range}',                fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/{lang}/diff',                 fn($p) => $pc->diff($p));
+$router->get('/page/{slug}/diff',                        fn($p) => $pc->diff($p));
 
 $router->get('/page/{slug}/{lang}/propose', fn($p) => $rc->newForm($p));
 $router->get('/page/{slug}/propose',        fn($p) => $rc->newForm($p));

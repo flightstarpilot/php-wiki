@@ -4,8 +4,9 @@ $pageTitle   = \Wiki\Services\I18nService::t('page.diff_title', ['v1' => $v1, 'v
 $t = fn(string $k, array $p = []) => \Wiki\Services\I18nService::t($k, $p);
 
 $baseUrl    = url('page/' . $group['slug'] . '/' . $page['lang'] . '/diff');
-$sideUrl    = $baseUrl . '?v1=' . $v1 . '&v2=' . $v2 . '&mode=side';
-$unifiedUrl = $baseUrl . '?v1=' . $v1 . '&v2=' . $v2 . '&mode=unified';
+$rangeSeg   = $v1 . '..' . $v2;
+$sideUrl    = $baseUrl . '/' . $rangeSeg . '/side';
+$unifiedUrl = $baseUrl . '/' . $rangeSeg . '/unified';
 $backUrl    = url('page/' . $group['slug'] . '/' . $page['lang'] . '/history');
 
 ob_start();

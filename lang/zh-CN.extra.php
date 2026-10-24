@@ -297,4 +297,11 @@ return [
 
     'page.slug_placeholder' => '留空则根据标题自动生成',
     'page.slug_hint_new'    => '用于 URL。非 ASCII 字符（包括中文）会被保留。留空则根据标题自动生成。',
+
+    // 翻译组语言管理
+    'page.lang_select'      => '语言版本',
+    'page.lang_new_hint'    => '新建翻译组的默认语言。',
+    'page.lang_create_hint' => '正在为此页面创建 {lang} 版本。',
+    'page.lang_add'         => '添加语言版本',
+    'page.new_lang_title'   => '新建 {lang} 版本',
 ];
