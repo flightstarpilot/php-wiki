@@ -43,6 +43,9 @@ ob_start();
 </form>
 
 <script src="<?= e(url('vendor/toastui/toastui-editor-all.min.js')) ?>"></script>
+<?php if (\Wiki\Services\I18nService::current() === 'zh-CN'): ?>
+<script src="<?= e(url('vendor/toastui/i18n/zh-cn.js')) ?>"></script>
+<?php endif; ?>
 <script>
 const editor = new toastui.Editor({
   el: document.querySelector('#editor'),

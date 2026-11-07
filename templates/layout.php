@@ -17,6 +17,7 @@ $openProposals    = $featureProposals ? \Wiki\Models\Proposal::countOpen() : 0;
 
 $favicon    = (string)\Wiki\Models\Settings::get('site.favicon', '');
 $logo       = (string)\Wiki\Models\Settings::get('site.logo', '');
+$hideLogo   = \Wiki\Models\Settings::getBool('site.hide_logo');
 $customCss  = (string)\Wiki\Models\Settings::get('ui.custom_css', '');
 $customJs   = (string)\Wiki\Models\Settings::get('ui.custom_js', '');
 $footerHtml = (string)\Wiki\Models\Settings::get('site.footer', '');
@@ -60,14 +61,16 @@ $footerHtml = (string)\Wiki\Models\Settings::get('site.footer', '');
 <header class="bg-white border-b sticky top-0 z-20">
   <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
     <a href="<?= e(url('')) ?>" class="flex items-center gap-2 text-lg font-bold shrink-0">
-      <?php if ($logo !== ''): ?>
-        <?php if (str_starts_with($logo, '<svg') || str_starts_with($logo, '<img')): ?>
-          <?= $logo ?>
+      <?php if (!$hideLogo): ?>
+        <?php if ($logo !== ''): ?>
+          <?php if (str_starts_with($logo, '<svg') || str_starts_with($logo, '<img')): ?>
+            <?= $logo ?>
+          <?php else: ?>
+            <img src="<?= e($logo) ?>" alt="" class="w-6 h-6">
+          <?php endif; ?>
         <?php else: ?>
-          <img src="<?= e($logo) ?>" alt="" class="w-6 h-6">
+          <img src="<?= e(url('assets/wiki-logo.svg')) ?>" alt="" class="w-8 h-8">
         <?php endif; ?>
-      <?php else: ?>
-        <?= icon('home', 'w-5 h-5 text-slate-500') ?>
       <?php endif; ?>
       <span><?= e($siteName) ?></span>
     </a>

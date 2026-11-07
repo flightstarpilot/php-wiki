@@ -25,6 +25,7 @@ class Settings
             'site.description'   => '',
             'site.base_url'      => '',
             'site.logo'          => '',
+            'site.hide_logo'     => '0',
             'site.favicon'       => '',
             'site.footer'        => '',
             'site.timezone'      => 'Asia/Shanghai',
